@@ -1,3 +1,5 @@
+import { kanji } from "./kanji"
+
 const where = (x: number, y: number, y_: number): number => {
     return x + y * y_
 }
@@ -39,4 +41,21 @@ export const findGenerator = (words: Array<string>, x: number, y: number): Array
     }
 
     return result
+}
+
+const pickRandomKanji = (kanji: Array<string>, arr: Array<string>): any => {
+    const k = kanji[Math.floor(Math.random() * kanji.length)]
+    if(arr.includes(k))
+        return pickRandomKanji(kanji, arr)
+    return k
+}
+
+export const findRandomGenerator = (len: number): Array<string> => {
+    const data = kanji
+    let arr = new Array(len)
+    for (let i = 0; i < len; i++) {
+        const k = pickRandomKanji(data, arr)
+        arr[i] = k
+    }
+    return arr
 }

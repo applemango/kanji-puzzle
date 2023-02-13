@@ -39,7 +39,7 @@ export const FindComponent = ({data}:{
     },[data])
     if(!data)
         return <div />
-    return <div className={styles.table}>
+    return <div style={{"--x": data.x} as React.CSSProperties} className={styles.table}>
         {data.data.map((line: string, i:number) => <div key={i} className={styles.line}>
             {line.split("").map((char: string, j:number) => <div key={j} onClick={(e: any)=> {
                 setClick((click: Array<boolean> | null) => toActive(i, j, data, click))
