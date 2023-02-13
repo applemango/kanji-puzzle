@@ -1,3 +1,32 @@
+.button_textarea {
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    margin: 0;
+    width: 256px;
+    margin: 8px 0;
+    margin-right: 64px;
+    height: 64px;
+    position: relative;
+    bottom: 16px;
+    font-size: 16px;
+    font-weight: 500;
+    border: none;
+    border-radius: 4px;
+    padding-left: 4px;
+    outline: none;
+}
+.button {
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    width: 64px;
+    height: 64px;
+    background-color: #fff;
+    border: none;
+    border-radius: 4px;
+    margin: 8px 0;
+    margin-right: 64px;
+    &:last-child {
+        margin-right: 0;
+    }
+}
 .container_create {
     padding-top: 24px;
     justify-content: center;
