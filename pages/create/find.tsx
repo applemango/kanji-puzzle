@@ -86,7 +86,7 @@ const Find = () => {
                 </svg>
             </button>
             <input onChange={()=> {
-                
+
             }} className={styles.button_textarea} type="text" value={exportData}  />
             <button onClick={()=> {
                 try {
@@ -109,7 +109,7 @@ const Find = () => {
                 </svg>
             </button>
             <button onClick={()=> {
-                window.open(`/play/find?data=${exportData}`, "create");
+                window.open(`/kanji-puzzle/play/find?data=${exportData}`, "create");
             }} className={styles.button}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-arrow-narrow-up" width="42" height="42" viewBox="0 0 24 24" strokeWidth="2" stroke="#0070f3" fill="none" strokeLinecap="round" strokeLinejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -187,7 +187,7 @@ const Find = () => {
                         words: words_
                     }
                     const json = saveObject(data_)
-                    window.open(`/play/find?data=${json}`, "create");
+                    window.open(`/kanji-puzzle/play/find?data=${json}`, "create");
                 } catch (e) {}
             }} className={styles.button} style={{marginBottom: 16}}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-brand-apple-arcade" width="42" height="42" viewBox="0 0 24 24" strokeWidth="2" stroke="#6f32be" fill="none" strokeLinecap="round" strokeLinejoin="round">
