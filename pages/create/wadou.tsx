@@ -34,7 +34,7 @@ const Wadou = () => {
         paddingTop: 24
     }}>
         <WadouComponent create data={data} />
-        {data.words.map((word: string, i: number)=> <div>
+        {data.words.map((word: string, i: number)=> <div key={i}>
             <input type="text" value={data.words[i]} onChange={(e: any)=> {
                 setData((d: wadou | null): wadou | null=> {
                     if(!d)

@@ -181,13 +181,14 @@ const Find = () => {
                 try {
                     if(!data)
                         return
-                    const words_ = findRandomGenerator(wordsLength, level)
-                    const data_data_ = findGenerator(words_, data.x, data.y)
+                    //const words_ = findRandomGenerator(wordsLength, level)
+                    //const data_data_ = findGenerator(words_, data.x, data.y)
+                    const data_data_ = findGenerator(words, data.x, data.y)
                     const data_: findCreate = {
                         x: data.x,
                         y: data.y,
                         data: data_data_,
-                        words: words_
+                        words: words
                     }
                     const json = saveObject(data_)
                     window.open(`/kanji-puzzle/play/find?data=${json}`, "create");

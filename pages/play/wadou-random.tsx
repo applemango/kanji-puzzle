@@ -9,6 +9,8 @@ import stylesA from "@/pages/scss/all.module.scss"
 import styles from "@/pages/scss/wadou.module.scss"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
+import LineSeed from "@next/font/local"
+const  lineSeed = LineSeed({ src : "../../components/fonts/LINESeedJP_OTF_Rg.woff"})
 
 const WadouRandom_ = () => {
     const[inputData, setInputData] = useState<string>("")
@@ -17,6 +19,7 @@ const WadouRandom_ = () => {
     const [back, setBack] = useState(0)
     const [input, setInput] = useState("")
     const [correct, setCorrect] = useState<boolean | null>(null)
+    const [useHint, setUseHint] = useState(false)
 
     useEffect(()=> {
         if(!data) {
@@ -48,6 +51,7 @@ const WadouRandom_ = () => {
                         setBack((old: number)=> old + 1)
                         setInput("")
                         setCorrect(null)
+                        setUseHint(false)
                     }
                 }} className={stylesA.button}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-arrow-left" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#6f32be" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -66,17 +70,16 @@ const WadouRandom_ = () => {
                     cursor: "pointer",
                     visibility: !(correct || back) ? "hidden" : "inherit"
                 }} onClick={(e: any)=> {
+                    setUseHint(false)
+                    setInput("")
+                    setCorrect(null)
                     if(back) {
                         setData(history[history.length - back])
-                        setInput("")
-                        setCorrect(null)
                         return setBack((old: number)=> old - 1)
                     }
                     const newData = wadouRandomGenerator()
                     setHistory((old: Array<wadou>)=> [...old, newData])
                     setData(newData)
-                    setInput("")
-                    setCorrect(null)
                 }} className={stylesA.button}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-arrow-right" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#6f32be" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -131,6 +134,7 @@ const WadouRandom_ = () => {
                     borderLeft: "none"
                 }} onClick={() => {
                     setCorrect(true)
+                    setUseHint(true)
                     setInput(data.correct)
                 }}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-bulb" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#f1c40f" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -140,6 +144,35 @@ const WadouRandom_ = () => {
                         <line x1="9.7" y1="17" x2="14.3" y2="17" />
                     </svg>
                 </button>
+            </div>
+            <div style={{
+                borderBottom: "1px solid #000",
+                marginLeft: 80,
+                marginTop: 8,
+                width: 320,
+                transition: "all .3s ease",
+                opacity: useHint || correct ? 1 : 0
+            }}>
+                { data.words.map((word: string, i: number)=> <div style={{
+                    display: "flex",
+                    alignItems: "baseline",
+                    borderTop: "1px solid #000"
+                }}>
+                    <p style={{
+                        margin: 0,
+                        marginRight: 32,
+                        marginTop: 8,
+                        fontSize: 32,
+                        fontFamily: lineSeed.style.fontFamily,
+                    }}>{word}</p>
+                    <p style={{
+                        fontFamily: lineSeed.style.fontFamily,
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        overflow: "hidden",
+                        whiteSpace: "nowrap"
+                    }}>{kanjiYomi[word] == "nan" || !kanjiYomi[word] ? "コンピューターだって知らない物はある" : kanjiYomi[word] }</p>
+                </div>)}
             </div>
         </div>
     </div>

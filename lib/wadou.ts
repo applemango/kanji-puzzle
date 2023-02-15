@@ -13,7 +13,7 @@ const deleteArray = (i: number, arr: any[]) => {
 
 
 export const wadouRandomGenerator = (): wadou => {
-    const random_kanji = kanji[Math.floor(Math.random() * 10)][0]
+    const random_kanji = kanji[Math.floor(Math.random() * kanji.length)][0]
     const kanjis = kanjiFilter((k: string)=> k[0] == random_kanji || k[1] == random_kanji)
     if(kanjis.length < 4)
         return wadouRandomGenerator()
