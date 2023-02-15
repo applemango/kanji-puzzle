@@ -153,7 +153,7 @@ const WadouRandom_ = () => {
                 transition: "all .3s ease",
                 opacity: useHint || correct ? 1 : 0
             }}>
-                { data.words.map((word: string, i: number)=> <div style={{
+                { data.words.map((word: string, i: number)=> <div key={i} style={{
                     display: "flex",
                     alignItems: "baseline",
                     borderTop: "1px solid #000"
