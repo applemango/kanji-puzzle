@@ -52,3 +52,14 @@ export const findExample:find = {
         "伯父映画番号両親英語"
     ]
 }
+
+export type wadou = {
+    words: [string, string, string, string],
+    correct: string,
+    type?: number | [string, string, string, string]
+}
+export const wadouExample: wadou = {
+    words: ["花火","花見","草花","火花"],
+    correct: "花",
+    type: 2
+}

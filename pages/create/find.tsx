@@ -8,6 +8,8 @@ import { findGenerator, findRandomGenerator } from "@/lib/find"
 
 const setArray = (i: number, data: any, arr: any[]) => {
     const array = arr.concat().map((data_: any, i_: number)=> i == i_ ? data : data_ )
+    //let array = arr.concat()
+    //arr[i] = dataではダメなのかな?
     return array
 }
 const deleteArray = (i: number, arr: any[]) => {
@@ -24,6 +26,7 @@ const Find = () => {
     const [words, setWords] = useState<Array<string>>([])
     const [exportData, setExportData] = useState<string>("")
     const [wordsLength, setWordsLength] = useState(0)
+    const [level, setLevel] = useState(0)
     const router = useRouter()
     /*useEffect(()=> {
         console.log(saveObject(findCreateExample))
@@ -32,7 +35,7 @@ const Find = () => {
         if(data)
             return
         setData({
-            data: ["          ","          ","          ","          "],
+            data: [...new Array(4)].map(()=> " ".repeat(10)),
             x: 10,
             y: 4
         })
@@ -141,7 +144,7 @@ const Find = () => {
             <button onClick={()=> {
                 if(!data)
                     return
-                setWords(findRandomGenerator(words.length))
+                setWords(findRandomGenerator(words.length, level))
             }} className={styles.button} style={{marginBottom: 16}}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-book" width="42" height="42" viewBox="0 0 24 24" strokeWidth="2" stroke="#0070f3" fill="none" strokeLinecap="round" strokeLinejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -178,7 +181,7 @@ const Find = () => {
                 try {
                     if(!data)
                         return
-                    const words_ = findRandomGenerator(wordsLength)
+                    const words_ = findRandomGenerator(wordsLength, level)
                     const data_data_ = findGenerator(words_, data.x, data.y)
                     const data_: findCreate = {
                         x: data.x,
@@ -198,6 +201,11 @@ const Find = () => {
                     <line x1="12" y1="7" x2="12" y2="13" />
                 </svg>
             </button>
+        </div>
+        <div>
+            <input onChange={(e: any)=> {
+                    setLevel(e.target.value)
+            }} type="number" value={level} className={styles.button_number} />
         </div>
         {words.map((word: string, i:number)=> <div className={styles.input_word} key={i}>
             <input className={styles.button_word} type="text" value={words[i]} onChange={(e: any)=> {
