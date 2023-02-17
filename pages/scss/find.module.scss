@@ -70,12 +70,17 @@
     margin: 0 auto;
     width: fit-content;
     margin-bottom: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 .container {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    flex-direction: column;
 }
 .table {
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;

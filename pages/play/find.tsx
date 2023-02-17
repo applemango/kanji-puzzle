@@ -4,7 +4,7 @@ import styles from "@/pages/scss/find.module.scss"
 
 import { loadObject, saveObject } from "@/lib/save"
 import { useRouter } from "next/router"
-import { FindComponent } from "@/components/find"
+import { FindComponent, FindPlayComponent } from "@/components/find"
 
 const Find = () => {
     const[inputData, setInputData] = useState<string>("")
@@ -33,7 +33,7 @@ const Find = () => {
             }}>create</button>
         </div>
     return <div className={styles.container}>
-        <FindComponent data={data} />
+        <FindPlayComponent data={data} />
     </div>
 }
 export default Find

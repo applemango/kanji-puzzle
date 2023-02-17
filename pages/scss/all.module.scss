@@ -82,3 +82,34 @@
         font-size: 48px;
     }
 }
+
+.accordion {
+    &:has(>div:last-child:not(:first-child)) >div:first-child {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    >div:first-child {
+        cursor: pointer;
+        width: 100%;
+        min-width: 640px;
+        height: 80px;
+        border: 1px solid #eee;
+        margin-top: 24px;
+        padding: 24px;
+        background-color: #f8f8f8;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        p {
+            margin: 0;
+            font-size: 12px;
+        }
+    }
+    >div:last-child:not(:first-child) {
+        padding: 24px;
+        background-color: #fafafa;
+        border: 1px solid #eee;
+        border-radius: 0 0 8px 8px;
+        border-top: 0;
+    }
+}
