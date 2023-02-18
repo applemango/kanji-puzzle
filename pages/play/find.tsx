@@ -1,4 +1,4 @@
-import { find, findExample } from "@/lib/type"
+import { find, findCreate, findExample } from "@/lib/type"
 import { useEffect, useState } from "react"
 import styles from "@/pages/scss/find.module.scss"
 
@@ -8,7 +8,7 @@ import { FindComponent, FindPlayComponent } from "@/components/find"
 
 const Find = () => {
     const[inputData, setInputData] = useState<string>("")
-    const [data, setData] = useState<find | null>(null)
+    const [data, setData] = useState<findCreate | null>(null)
     const router = useRouter()
 
     useEffect(()=> {
@@ -27,7 +27,7 @@ const Find = () => {
             <button onClick={()=> {
                 try {
                     const json = loadObject(inputData)
-                    if(json.x && json.y && json.data)
+                    if(json.x && json.y && json.data && json.words)
                         setData(json)
                 } catch (e) {}
             }}>create</button>

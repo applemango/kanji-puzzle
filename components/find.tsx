@@ -1,4 +1,4 @@
-import { find, findExample } from "@/lib/type"
+import { find, findCreate, findExample } from "@/lib/type"
 import { useEffect, useState } from "react"
 import styles from "@/pages/scss/find.module.scss"
 import stylesA from "@/pages/scss/all.module.scss"
@@ -70,6 +70,7 @@ type charData = {
     color?: string | null,
 }
 type charPair = [charData, charData | null]
+type charPairNoNull = [charData, charData]
 
 const charDataEqual = (a: charData | null, b: charData | null) => {
     if(!a || !b)
@@ -79,7 +80,11 @@ const charDataEqual = (a: charData | null, b: charData | null) => {
     return false
 }
 
-const pushPair = (clickPair: Array<charPair>, charData: charData) => {
+const pushPair = (clickPair: Array<charPair>, charData: charData | charPair) => {
+    if(Array.isArray(charData)) {
+        clickPair.push(charData)
+        return
+    }
     if(clickPair.length && !clickPair[clickPair.length - 1][1]) {
         charData.color = clickPair[clickPair.length - 1][0].color
         return clickPair[clickPair.length - 1][1] = charData
@@ -126,14 +131,37 @@ const getColor = (clickPair: Array<charPair>, target: charData) => {
     return clickPair[position][0].color || "inherit"
 }
 
+const getPairChars = (char: string, data: findCreate): Array<string> => {
+    let res:Array<string> = [];
+    const words = data.words.concat()
+    words.map((word) => {
+        if(word[0] == char)
+            res.push(word[1])
+        if(word[1] == char)
+            res.push(word[0])
+    })
+    return res
+}
+
+const getPairCharPositions = (char: string, data: findCreate): Array<charData> => {
+    let pairPositions: Array<charData> = []
+    const d = data.data.concat()
+    d.map((l: string, i: number) => l.split("").map((c: string, j: number) => {
+        if(c == char)
+            pairPositions.push({x: i, y: j, char: c})
+    }))
+    return pairPositions
+}
+
 export const FindPlayComponent = ({data}:{
-    data: find | null
+    data: null | findCreate
 }) => {
     const [click, setClick] = useState<Array<boolean> | null>(null)
     const [clickPair, setClickPair] = useState<Array<charPair>>([])
     const [totalClicks, setTotalClicks] = useState<number>(0)
     const hintMax = 3
     const [hintUsed, setHintUsed] = useState(3)
+    const [hintMode, setHintMode] = useState(false)
 
     useEffect(()=> {
         if(!data)
@@ -143,22 +171,46 @@ export const FindPlayComponent = ({data}:{
     },[data])
     if(!data)
         return <div />
-    console.log(data)
-    console.log(click, clickPair)
+    //console.log(data)
+    //console.log(click, clickPair)
     return <>
     <div style={{"--x": data.x} as React.CSSProperties} className={styles.table}>
         {data.data.map((line: string, i:number) => <div key={i} className={styles.line}>
             {line.split("").map((char: string, j:number) => <div key={j} onClick={(e: any)=> {
                 //xとyを間違えた、支障は無いので続ける
-                //x: i, y: j x
+                //x: i, y: j x <- xだけど今使っている
                 //x: j, y: i o
                 const me: charData = {
                     x: i,
                     y: j,
                     char: char
                 }
+
+                if(getColor(clickPair, me) == "#fff")
+                    return
+
+                if(hintMode) {
+                    setHintMode(false)
+                    if(isActive(i, j, data, click)) {
+                        setClickPair((clickPair) => popPair(clickPair, me, setClick, data))
+                    }
+                    const pairChars = getPairChars(me.char, data)[0]
+                    const charPosition = getPairCharPositions(pairChars, data)[0]
+                    if(!charPosition)
+                        return
+                    setClickPair((clickPair) => popPair(clickPair, charPosition, setClick, data))
+                    const charPair: charPairNoNull = [
+                        {x: me.x, y: me.y, char: me.char, color: "#fff"},
+                        {x: charPosition.x, y: charPosition.y, char: charPosition.char, color: "#fff"}
+                    ]
+                    setClickPair((clickPair)=> [...clickPair, charPair])
+                    setClick((click: Array<boolean> | null) => setActive(true,charPair[0].x, charPair[0].y, data, click))
+                    setClick((click: Array<boolean> | null) => setActive(true,charPair[1].x, charPair[1].y, data, click))
+                    return
+                }
+
                 if(isActive(i, j, data, click)) {
-                    setClickPair(popPair(clickPair, me, setClick, data))
+                    setClickPair((clickPair) => popPair(clickPair, me, setClick, data))
                 } else {
                     pushPair(clickPair, me)
                 }
@@ -170,5 +222,27 @@ export const FindPlayComponent = ({data}:{
             </div>)}
         </div>)}
     </div> 
+    <div style={{
+
+    }}>
+        <button className={stylesA.button} style={{
+            margin: 0,
+            marginTop: 12,
+            boxShadow: "none",
+            border: "1px solid #eee",
+            borderLeft: "1px solid #eee",
+            cursor: "pointer",
+            backgroundColor: hintMode ? "#f8f8f8" : "#fff"
+        }} onClick={() => {
+            setHintMode((mode: boolean) => !mode)
+        }}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-bulb" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#FFC107" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M3 12h1m8 -9v1m8 8h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7" />
+                <path d="M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3" />
+                <line x1="9.7" y1="17" x2="14.3" y2="17" />
+            </svg>
+        </button>
+    </div>
     </>
 }
