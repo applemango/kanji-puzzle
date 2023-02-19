@@ -5,6 +5,7 @@ import stylesA from "@/pages/scss/all.module.scss"
 
 import LineSeed from "@next/font/local"
 import { deleteArray } from "@/lib/array"
+import { kanji } from "@/lib/kanji"
 const  lineSeed = LineSeed({ src : "./fonts/LINESeedJP_OTF_Rg.woff"})
 
 const where = (x: number, y: number, data: find | null): number => {
@@ -153,6 +154,46 @@ const getPairCharPositions = (char: string, data: findCreate): Array<charData> =
     return pairPositions
 }
 
+const checkClickPair = (clickPair: Array<charPair>): Array<charPair> => {
+    const colorOk = "#00b341"
+    const colorError = "#e00"
+    const cp = clickPair.concat()
+    for (let i = 0; i < cp.length; i++) {
+        const f = cp[i][0]
+        const l = cp[i][1] // "Object is possibly 'null'."
+        if(!(l && f)) {
+            cp[i][0].color = colorError
+            continue
+        }
+        const a = f.char + l.char
+        const b = l.char + f.char
+        if(!(kanji.includes(a) || kanji.includes(b))) {
+            l.color = colorError
+            f.color = colorError
+            continue
+        }
+        l.color = colorOk
+        f.color = colorOk
+    }
+    return cp
+}
+
+const clickPairToRandomColor = (clickPair: Array<charPair>): Array<charPair> => {
+    const cp = clickPair.concat()
+    for(let i = 0; i < cp.length; i++) {
+        const f = cp[i][0]
+        const l = cp[i][1] // "Object is possibly 'null'."
+        const randomColor = colors[Math.floor(Math.random() * colors.length)]
+        if(!l) {
+            f.color = randomColor
+            continue
+        }
+        f.color = randomColor
+        l.color = randomColor
+    }
+    return cp
+}
+
 export const FindPlayComponent = ({data}:{
     data: null | findCreate
 }) => {
@@ -160,8 +201,10 @@ export const FindPlayComponent = ({data}:{
     const [clickPair, setClickPair] = useState<Array<charPair>>([])
     const [totalClicks, setTotalClicks] = useState<number>(0)
     const hintMax = 3
-    const [hintUsed, setHintUsed] = useState(3)
+    const [hintUsed, setHintUsed] = useState(0)
     const [hintMode, setHintMode] = useState(false)
+    const [canCheck, setCanCheck] = useState(false)
+    const [checkUsed, setCheckUsed] = useState(false)
 
     useEffect(()=> {
         if(!data)
@@ -169,6 +212,11 @@ export const FindPlayComponent = ({data}:{
         const arr = new Array<boolean>(data.x * data.y)
         setClick(arr)
     },[data])
+    useEffect(()=> {
+        if(clickPair.length == data?.words.length && clickPair[clickPair.length - 1][1])
+            return setCanCheck(true)
+        setCanCheck(false)
+    })
     if(!data)
         return <div />
     //console.log(data)
@@ -177,20 +225,27 @@ export const FindPlayComponent = ({data}:{
     <div style={{"--x": data.x} as React.CSSProperties} className={styles.table}>
         {data.data.map((line: string, i:number) => <div key={i} className={styles.line}>
             {line.split("").map((char: string, j:number) => <div key={j} onClick={(e: any)=> {
-                //xとyを間違えた、支障は無いので続ける
-                //x: i, y: j x <- xだけど今使っている
-                //x: j, y: i o
+                //xとyを間違えた、支障は無いので続ける(簡単に変更出来るがややこしくなるため)
+                //x: i, y: j | x <- xだけど今使っている
+                //x: j, y: i | o
                 const me: charData = {
                     x: i,
                     y: j,
                     char: char
                 }
+                
+                if(checkUsed) {
+                    setClickPair((cp)=> {
+                        return clickPairToRandomColor(cp)
+                    })
+                    setCheckUsed(false)
+                    return
+                }
 
-                if(getColor(clickPair, me) == "#fff")
+                if(getColor(clickPair, me) == "#f5f5f5")
                     return
 
                 if(hintMode) {
-                    setHintMode(false)
                     if(isActive(i, j, data, click)) {
                         setClickPair((clickPair) => popPair(clickPair, me, setClick, data))
                     }
@@ -200,12 +255,14 @@ export const FindPlayComponent = ({data}:{
                         return
                     setClickPair((clickPair) => popPair(clickPair, charPosition, setClick, data))
                     const charPair: charPairNoNull = [
-                        {x: me.x, y: me.y, char: me.char, color: "#fff"},
-                        {x: charPosition.x, y: charPosition.y, char: charPosition.char, color: "#fff"}
+                        {x: me.x, y: me.y, char: me.char, color: "#f5f5f5"},
+                        {x: charPosition.x, y: charPosition.y, char: charPosition.char, color: "#f5f5f5"}
                     ]
                     setClickPair((clickPair)=> [...clickPair, charPair])
                     setClick((click: Array<boolean> | null) => setActive(true,charPair[0].x, charPair[0].y, data, click))
                     setClick((click: Array<boolean> | null) => setActive(true,charPair[1].x, charPair[1].y, data, click))
+                    setHintMode(false)
+                    setHintUsed((used)=> used + 1)
                     return
                 }
 
@@ -223,7 +280,7 @@ export const FindPlayComponent = ({data}:{
         </div>)}
     </div> 
     <div style={{
-
+        display: "flex"
     }}>
         <button className={stylesA.button} style={{
             margin: 0,
@@ -232,7 +289,10 @@ export const FindPlayComponent = ({data}:{
             border: "1px solid #eee",
             borderLeft: "1px solid #eee",
             cursor: "pointer",
-            backgroundColor: hintMode ? "#f8f8f8" : "#fff"
+            backgroundColor: hintMode ? "#f8f8f8" : "#fff",
+            borderRight: canCheck ? "none" : "1px solid #eee",
+            borderTopRightRadius: canCheck ? 0 : 4,
+            borderBottomRightRadius: canCheck ? 0 : 4
         }} onClick={() => {
             setHintMode((mode: boolean) => !mode)
         }}>
@@ -243,6 +303,27 @@ export const FindPlayComponent = ({data}:{
                 <line x1="9.7" y1="17" x2="14.3" y2="17" />
             </svg>
         </button>
+        {canCheck && <button className={stylesA.button} style={{
+            margin: 0,
+            marginTop: 12,
+            boxShadow: "none",
+            border: "1px solid #eee",
+            borderLeft: "none",
+            cursor: "pointer",
+            backgroundColor: hintMode ? "#f8f8f8" : "#fff",
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+        }} onClick={()=> {
+            setCheckUsed(true)
+            setClickPair((arr)=> {
+                return checkClickPair(arr)
+            })
+        }}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-check" width="42" height="42" viewBox="0 0 24 24" stroke-width="1.5" stroke="#6f32be" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M5 12l5 5l10 -10" />
+                </svg>
+        </button>}
     </div>
     </>
 }
