@@ -5,7 +5,8 @@ import stylesA from "@/pages/scss/all.module.scss"
 
 import LineSeed from "@next/font/local"
 import { deleteArray } from "@/lib/array"
-import { kanji } from "@/lib/kanji"
+import { kanji, kanjiYomi } from "@/lib/kanji"
+import { kanjiFilter } from "@/lib/utils/kanji"
 const  lineSeed = LineSeed({ src : "./fonts/LINESeedJP_OTF_Rg.woff"})
 
 const where = (x: number, y: number, data: find | null): number => {
@@ -194,6 +195,27 @@ const clickPairToRandomColor = (clickPair: Array<charPair>): Array<charPair> => 
     return cp
 }
 
+const searchChar = (char: string): Array<string> => {
+    const res_ = kanjiFilter((str: string)=> {
+        if(str[0] == char || str[1] == char)
+            return true
+        return false
+    })
+    const rf = res_.concat().filter((str)=> {
+        if(str[0] == char)
+            return true
+        return false
+    })
+    const rl = res_.concat().filter((str)=> {
+        if(str[1] == char)
+            return true
+        return false
+    })
+    return rf.concat(rl)
+}
+
+type searchResult = string
+
 export const FindPlayComponent = ({data}:{
     data: null | findCreate
 }) => {
@@ -205,6 +227,10 @@ export const FindPlayComponent = ({data}:{
     const [hintMode, setHintMode] = useState(false)
     const [canCheck, setCanCheck] = useState(false)
     const [checkUsed, setCheckUsed] = useState(false)
+
+    const [searchMode, setSearchMode] = useState(false)
+    const [searchResult, setSearchResult] = useState<Array<searchResult>>([])
+    const [showSolution, setShowSolution] = useState(false)
 
     useEffect(()=> {
         if(!data)
@@ -222,7 +248,7 @@ export const FindPlayComponent = ({data}:{
     //console.log(data)
     //console.log(click, clickPair)
     return <>
-    <div style={{"--x": data.x} as React.CSSProperties} className={styles.table}>
+    <div style={{"--x": data.x, marginTop: 24} as React.CSSProperties} className={styles.table}>
         {data.data.map((line: string, i:number) => <div key={i} className={styles.line}>
             {line.split("").map((char: string, j:number) => <div key={j} onClick={(e: any)=> {
                 //xとyを間違えた、支障は無いので続ける(簡単に変更出来るがややこしくなるため)
@@ -239,6 +265,12 @@ export const FindPlayComponent = ({data}:{
                         return clickPairToRandomColor(cp)
                     })
                     setCheckUsed(false)
+                    return
+                }
+
+                if(searchMode) {
+                    setSearchResult(searchChar(me.char))
+                    setSearchMode(false)
                     return
                 }
 
@@ -289,12 +321,61 @@ export const FindPlayComponent = ({data}:{
             border: "1px solid #eee",
             borderLeft: "1px solid #eee",
             cursor: "pointer",
-            backgroundColor: hintMode ? "#f8f8f8" : "#fff",
+            backgroundColor: (hintMode || showSolution || searchMode) ? "#f8f8f8" : "#fff",
+            borderRight: "none",
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0
+        }} onClick={() => {
+            setSearchResult([])
+            setSearchMode((mode)=> !mode)
+        }}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-list-search" width="42" height="42" viewBox="0 0 24 24" stroke-width="1.5" stroke="#00b341" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <circle cx="15" cy="15" r="4" />
+                <path d="M18.5 18.5l2.5 2.5" />
+                <path d="M4 6h16" />
+                <path d="M4 12h4" />
+                <path d="M4 18h4" />
+            </svg>
+        </button>
+        <button className={stylesA.button} style={{
+            margin: 0,
+            marginTop: 12,
+            boxShadow: "none",
+            border: "1px solid #eee",
+            borderLeft: "none",
+            cursor: "pointer",
+            backgroundColor: (hintMode || showSolution || searchMode) ? "#f8f8f8" : "#fff",
+            borderRight: "none",
+            borderRadius: 0
+        }} onClick={() => {
+            setSearchResult([])
+            setShowSolution((mode) => !mode)
+        }}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-list" width="42" height="42" viewBox="0 0 24 24" stroke-width="1.5" stroke="#00b341" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <line x1="9" y1="6" x2="20" y2="6" />
+              <line x1="9" y1="12" x2="20" y2="12" />
+              <line x1="9" y1="18" x2="20" y2="18" />
+              <line x1="5" y1="6" x2="5" y2="6.01" />
+              <line x1="5" y1="12" x2="5" y2="12.01" />
+              <line x1="5" y1="18" x2="5" y2="18.01" />
+            </svg>
+        </button>
+        <button className={stylesA.button} style={{
+            margin: 0,
+            marginTop: 12,
+            boxShadow: "none",
+            border: "1px solid #eee",
+            borderLeft: "none",
+            cursor: "pointer",
+            backgroundColor: (hintMode || showSolution || searchMode) ? "#f8f8f8" : "#fff",
             borderRight: canCheck ? "none" : "1px solid #eee",
+            borderRadius: 0,
             borderTopRightRadius: canCheck ? 0 : 4,
             borderBottomRightRadius: canCheck ? 0 : 4
         }} onClick={() => {
-            setHintMode((mode: boolean) => !mode)
+            setHintMode((mode) => !mode)
         }}>
             <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-bulb" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#FFC107" fill="none" strokeLinecap="round" strokeLinejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -310,7 +391,7 @@ export const FindPlayComponent = ({data}:{
             border: "1px solid #eee",
             borderLeft: "none",
             cursor: "pointer",
-            backgroundColor: hintMode ? "#f8f8f8" : "#fff",
+            backgroundColor: (hintMode || showSolution || searchMode) ? "#f8f8f8" : "#fff",
             borderTopLeftRadius: 0,
             borderBottomLeftRadius: 0,
         }} onClick={()=> {
@@ -324,6 +405,49 @@ export const FindPlayComponent = ({data}:{
                   <path d="M5 12l5 5l10 -10" />
                 </svg>
         </button>}
+    </div>
+    <div style={{
+        borderBottom: "1px solid #000",
+        marginTop: 16,
+        width: "80%",
+        transition: "all .3s ease",
+        opacity: (searchResult.length
+                    ? searchResult
+                    : showSolution
+                        ? data.words
+                        : []).length ? 1 : 0,
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        flexWrap: "wrap",
+        justifyContent: "center",
+    }}>
+        { (searchResult.length
+            ? searchResult
+            : showSolution
+                ? data.words
+                : []).map((word: string, i: number)=> <div key={i} style={{
+            display: "flex",
+            alignItems: "baseline",
+            borderTop: "1px solid #000",
+            height: 69
+        }}>
+            <p style={{
+                margin: 0,
+                marginRight: 2,
+                marginLeft: 12,
+                marginTop: 8,
+                fontSize: 32,
+                fontFamily: lineSeed.style.fontFamily,
+            }}>{word}</p>
+            <p style={{
+                fontFamily: lineSeed.style.fontFamily,
+                width: 80,
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+                whiteSpace: "nowrap"
+            }}>{kanjiYomi[word] == "nan" || !kanjiYomi[word] ? "" : kanjiYomi[word] }</p>
+        </div>)}
     </div>
     </>
 }
