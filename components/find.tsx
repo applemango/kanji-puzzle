@@ -239,9 +239,9 @@ export const FindPlayComponent = ({data}:{
         setClick(arr)
     },[data])
     useEffect(()=> {
-        if(clickPair.length == data?.words.length && clickPair[clickPair.length - 1][1])
+        //if(clickPair.length == data?.words.length && clickPair[clickPair.length - 1][1])
             return setCanCheck(true)
-        setCanCheck(false)
+        //setCanCheck(false)
     })
     if(!data)
         return <div />
@@ -395,6 +395,13 @@ export const FindPlayComponent = ({data}:{
             borderTopLeftRadius: 0,
             borderBottomLeftRadius: 0,
         }} onClick={()=> {
+            if(checkUsed) {
+                setClickPair((cp)=> {
+                    return clickPairToRandomColor(cp)
+                })
+                setCheckUsed(false)
+                return
+            }
             setCheckUsed(true)
             setClickPair((arr)=> {
                 return checkClickPair(arr)
