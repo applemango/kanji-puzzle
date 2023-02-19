@@ -407,7 +407,7 @@ export const FindPlayComponent = ({data}:{
         </button>}
     </div>
     <div style={{
-        borderBottom: "1px solid #000",
+        //borderBottom: "1px solid #000",
         marginTop: 16,
         width: "80%",
         transition: "all .3s ease",
