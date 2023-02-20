@@ -1,6 +1,42 @@
 .correct  div:first-child  div:nth-child(3)  div:nth-child(3) {
+    transition-delay: 2s;
     color: #00b341;
 }
 .incorrect div:first-child div:nth-child(3) div:nth-child(3) {
+    transition-delay: 2s;
+    color: #e00;
+}
+
+.correct1  div:first-child  div:nth-child(3)  div:nth-child(1) {
+    color: #00b341;
+}
+.incorrect1 div:first-child div:nth-child(3) div:nth-child(1) {
+    color: #e00;
+}
+
+.correct0  div:first-child  div:nth-child(1)  div:nth-child(3) {
+    transition-delay: 0.5s;
+    color: #00b341;
+}
+.incorrect0 div:first-child div:nth-child(1) div:nth-child(3) {
+    transition-delay: 0.5s;
+    color: #e00;
+}
+
+.correct2  div:first-child  div:nth-child(3)  div:nth-child(5) {
+    transition-delay: 1s;
+    color: #00b341;
+}
+.incorrect2 div:first-child div:nth-child(3) div:nth-child(5) {
+    transition-delay: 1s;
+    color: #e00;
+}
+
+.correct3  div:first-child  div:nth-child(5)  div:nth-child(3) {
+    transition-delay: 1.5s;
+    color: #00b341;
+}
+.incorrect3 div:first-child div:nth-child(5) div:nth-child(3) {
+    transition-delay: 1.5s;
     color: #e00;
 }

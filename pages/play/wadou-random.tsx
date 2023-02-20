@@ -20,11 +20,13 @@ const WadouRandom_ = () => {
     const [input, setInput] = useState("")
     const [correct, setCorrect] = useState<boolean | null>(null)
     const [useHint, setUseHint] = useState(false)
+    const [corrects, setCorrects] = useState<Array<boolean | null>>([null, null, null, null])
 
     useEffect(()=> {
         if(!data) {
             const newData = wadouRandomGenerator()
             setData(newData)
+            setCorrects([null, null, null, null])
             setHistory([newData])
         }
     },[])
@@ -33,7 +35,13 @@ const WadouRandom_ = () => {
     if(!data)
         return <div/>
     return <div style={{minHeight: "100vh"}} className={stylesA.play}>
-        <div className={correct != null ? correct ? styles.correct : styles.incorrect : ""}>
+        <div className={`
+            ${correct != null ? correct ? styles.correct : styles.incorrect : ""}
+            ${corrects[0] != null ? corrects[0] ? styles.correct0 : styles.incorrect0 : ""}
+            ${corrects[1] != null ? corrects[1] ? styles.correct1 : styles.incorrect1 : ""}
+            ${corrects[2] != null ? corrects[2] ? styles.correct2 : styles.incorrect2 : ""}
+            ${corrects[3] != null ? corrects[3] ? styles.correct3 : styles.incorrect3 : ""}
+        `}>
             <div style={{
                 display: "flex",
                 alignItems: "center"
@@ -51,6 +59,7 @@ const WadouRandom_ = () => {
                         setBack((old: number)=> old + 1)
                         setInput("")
                         setCorrect(null)
+                        setCorrects([null, null, null, null])
                         setUseHint(false)
                     }
                 }} className={stylesA.button}>
@@ -73,6 +82,7 @@ const WadouRandom_ = () => {
                     setUseHint(false)
                     setInput("")
                     setCorrect(null)
+                    setCorrects([null, null, null, null])
                     if(back) {
                         setData(history[history.length - back])
                         return setBack((old: number)=> old - 1)
@@ -104,6 +114,7 @@ const WadouRandom_ = () => {
                 }} type="text" value={input} onChange={(e: any) => {
                     setInput(e.target.value)
                     setCorrect(null)
+                    setCorrects([null, null, null, null])
                 }}/>
                 <button className={stylesA.button} style={{
                     margin: 0,
@@ -112,9 +123,25 @@ const WadouRandom_ = () => {
                     border: "1px solid #eee",
                     cursor: "pointer"
                 }} onClick={() => {
-                    if(input == data.correct)
+                    if(input == data.correct) {
+                        setCorrects([true, true, true, true])
                         return setCorrect(true)
-                    setCorrect(false)
+                    }
+                    let correct = true
+                    let arr = new Array(data.words.length)
+                    data.words.map((word, i)=> {
+                        let target;
+                        if(word[0] == data.correct)
+                            target = input + word[1]
+                        else
+                            target = word[0] + input
+                        if(kanji.includes(target))
+                            return arr[i] = true
+                        correct = false
+                        return arr[i] = false
+                    })
+                    setCorrects(arr)
+                    setCorrect(correct)
                 }}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-wand" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#6f32be" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -134,6 +161,7 @@ const WadouRandom_ = () => {
                     borderLeft: "none"
                 }} onClick={() => {
                     setCorrect(true)
+                    setCorrects([true, true, true, true])
                     setUseHint(true)
                     setInput(data.correct)
                 }}>

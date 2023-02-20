@@ -133,6 +133,17 @@ const getColor = (clickPair: Array<charPair>, target: charData) => {
     return clickPair[position][0].color || "inherit"
 }
 
+const getBackground = (clickPair: Array<charPair>, target: charData) => {
+    const position = PairPosition(clickPair, target)
+    if(position === -1)
+        return "#fff"
+    if(!clickPair[position][1])
+        return "#fff"
+    if(clickPair[position][0].color == "#f5f5f5")
+        return "#ddd"
+    return "#eee"
+}
+
 const getPairChars = (char: string, data: findCreate): Array<string> => {
     let res:Array<string> = [];
     const words = data.words.concat()
@@ -305,7 +316,8 @@ export const FindPlayComponent = ({data}:{
                 }
                 setClick((click: Array<boolean> | null) => toActive(i, j, data, click))
             }} style={{
-                color: getColor(clickPair, {x: i, y: j, char: char})
+                color: getColor(clickPair, {x: i, y: j, char: char}),
+                backgroundColor: getBackground(clickPair, {x: i, y: j, char: char}),
             }} className={`${isActive(i, j, data, click) && styles.active} ${styles.char}`}>
                 <p style={{fontFamily: lineSeed.style.fontFamily}}>{char}</p>
             </div>)}
