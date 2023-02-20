@@ -492,7 +492,7 @@ export const Effect = () => {
         }
         setArr(a)
     },[])
-    return <div className={stylesA.effect_container}>{arr.map(()=> <div style={Object.assign({
+    return <div className={stylesA.effect_container}>{arr.map((_, i)=> <div key={i} style={Object.assign({
         backgroundColor: colors[Math.floor(Math.random() * colors.length)],
         left: `${Math.floor(Math.random() * 100)}%`,
         animationDuration: `${Math.random() * 3}s`,
