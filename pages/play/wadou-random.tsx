@@ -10,6 +10,7 @@ import styles from "@/pages/scss/wadou.module.scss"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import LineSeed from "@next/font/local"
+import { Effect } from "@/components/find"
 const  lineSeed = LineSeed({ src : "../../components/fonts/LINESeedJP_OTF_Rg.woff"})
 
 const WadouRandom_ = () => {
@@ -203,6 +204,7 @@ const WadouRandom_ = () => {
                 </div>)}
             </div>
         </div>
+        {(correct && !useHint) && <Effect />}
     </div>
 }
 export default WadouRandom_

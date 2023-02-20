@@ -56,6 +56,8 @@ export const FindComponent = ({data}:{
 
 //const colors = ["#F44336","#E91E63","#9C27B0","#673AB7","#3F51B5","#2196F3","#03A9F4","#00BCD4","#009688","#4CAF50","#8BC34A","#FFEB3B","#FFC107","#FF9800","#FF5722","#795548","#78909C","#BDBDBD","#9E9E9E","#424242"]
 const colors = ["#F44336","#E91E63","#9C27B0","#673AB7","#3F51B5","#0070f3","#03A9F4","#00BCD4","#009688","#4CAF50","#8BC34A","#FFC107","#FF9800","#FF5722"]
+const colorHint = "#f5f5f5"
+
 
 const setActive = (d: boolean, x: number, y: number, data: find | null, arr: Array<boolean> | null): Array<boolean> | null => {
     if(!arr)
@@ -139,7 +141,7 @@ const getBackground = (clickPair: Array<charPair>, target: charData) => {
         return "#fff"
     if(!clickPair[position][1])
         return "#fff"
-    if(clickPair[position][0].color == "#f5f5f5")
+    if(clickPair[position][0].color == colorHint)
         return "#ddd"
     return "#eee"
 }
@@ -173,6 +175,8 @@ const checkClickPair = (clickPair: Array<charPair>): Array<charPair> => {
     for (let i = 0; i < cp.length; i++) {
         const f = cp[i][0]
         const l = cp[i][1] // "Object is possibly 'null'."
+        if(f.color == colorHint)
+            continue
         if(!(l && f)) {
             cp[i][0].color = colorError
             continue
@@ -196,6 +200,8 @@ const clickPairToRandomColor = (clickPair: Array<charPair>): Array<charPair> => 
         const f = cp[i][0]
         const l = cp[i][1] // "Object is possibly 'null'."
         const randomColor = colors[Math.floor(Math.random() * colors.length)]
+        if(f.color == colorHint)
+            continue
         if(!l) {
             f.color = randomColor
             continue
@@ -236,12 +242,14 @@ export const FindPlayComponent = ({data}:{
     const hintMax = 3
     const [hintUsed, setHintUsed] = useState(0)
     const [hintMode, setHintMode] = useState(false)
-    const [canCheck, setCanCheck] = useState(false)
+    const [canCheck, setCanCheck] = useState(true)
     const [checkUsed, setCheckUsed] = useState(false)
 
     const [searchMode, setSearchMode] = useState(false)
     const [searchResult, setSearchResult] = useState<Array<searchResult>>([])
     const [showSolution, setShowSolution] = useState(false)
+
+    const [end, setEnd] = useState(false)
 
     useEffect(()=> {
         if(!data)
@@ -250,8 +258,10 @@ export const FindPlayComponent = ({data}:{
         setClick(arr)
     },[data])
     useEffect(()=> {
-        //if(clickPair.length == data?.words.length && clickPair[clickPair.length - 1][1])
-            return setCanCheck(true)
+        if(clickPair.length == data?.words.length && clickPair[clickPair.length - 1][1])
+            return setEnd(true)
+        return setEnd(false)
+        //return setCanCheck(true)
         //setCanCheck(false)
     })
     if(!data)
@@ -285,7 +295,7 @@ export const FindPlayComponent = ({data}:{
                     return
                 }
 
-                if(getColor(clickPair, me) == "#f5f5f5")
+                if(getColor(clickPair, me) == colorHint)
                     return
 
                 if(hintMode) {
@@ -298,8 +308,8 @@ export const FindPlayComponent = ({data}:{
                         return
                     setClickPair((clickPair) => popPair(clickPair, charPosition, setClick, data))
                     const charPair: charPairNoNull = [
-                        {x: me.x, y: me.y, char: me.char, color: "#f5f5f5"},
-                        {x: charPosition.x, y: charPosition.y, char: charPosition.char, color: "#f5f5f5"}
+                        {x: me.x, y: me.y, char: me.char, color: colorHint},
+                        {x: charPosition.x, y: charPosition.y, char: charPosition.char, color: colorHint}
                     ]
                     setClickPair((clickPair)=> [...clickPair, charPair])
                     setClick((click: Array<boolean> | null) => setActive(true,charPair[0].x, charPair[0].y, data, click))
@@ -468,5 +478,26 @@ export const FindPlayComponent = ({data}:{
             }}>{kanjiYomi[word] == "nan" || !kanjiYomi[word] ? "" : kanjiYomi[word] }</p>
         </div>)}
     </div>
+    {end && <Effect />}
     </>
+}
+
+export const Effect = () => {
+    const n = 300
+    const [arr, setArr] = useState([])
+    useEffect(()=> {
+        let a: any = new Array(n)
+        for (let i = 0; i < a.length; i++) {
+            a[i] = undefined;
+        }
+        setArr(a)
+    },[])
+    return <div className={stylesA.effect_container}>{arr.map(()=> <div style={Object.assign({
+        backgroundColor: colors[Math.floor(Math.random() * colors.length)],
+        left: `${Math.floor(Math.random() * 100)}%`,
+        animationDuration: `${Math.random() * 3}s`,
+        animationDelay: `${Math.random()}s`
+    }, {
+        "--random": Math.random() * 2 - 1
+    } as React.CSSProperties)} className={stylesA.effect} />)}</div>
 }

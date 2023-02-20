@@ -113,3 +113,33 @@
         border-top: 0;
     }
 }
+
+.effect_container {
+    height: 0px;
+    width: 0px;
+    .effect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 100%;
+        animation: ease .3s show;
+        opacity: 0;
+    }
+}
+
+@keyframes show {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 1;
+    }
+    80% {
+        transform: translateY(calc(90vh - 30px)) translateX(calc(var(--random) * 300px));
+        opacity: .8;
+    }
+    100% {
+        transform: translateY(calc(100vh - 30px));
+        opacity: 0;
+    }
+}
