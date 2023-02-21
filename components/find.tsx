@@ -250,7 +250,6 @@ export const FindPlayComponent = ({data}:{
     const [showSolution, setShowSolution] = useState(false)
 
     const [end, setEnd] = useState(false)
-
     useEffect(()=> {
         if(!data)
             return
@@ -333,23 +332,36 @@ export const FindPlayComponent = ({data}:{
             </div>)}
         </div>)}
     </div> 
-    <div style={{
-        display: "flex"
+    <div className={styles.buttons_container} style={{
+        display: "flex",
+        position: "relative",
+        backgroundColor: (hintMode || showSolution || searchMode || checkUsed) ? "#f8f8f8" : "#fff",
+        marginTop: 12
     }}>
         <button className={stylesA.button} style={{
             margin: 0,
-            marginTop: 12,
+            marginTop: 0,
             boxShadow: "none",
             border: "1px solid #eee",
             borderLeft: "1px solid #eee",
             cursor: "pointer",
-            backgroundColor: (hintMode || showSolution || searchMode) ? "#f8f8f8" : "#fff",
+            //backgroundColor: (hintMode || showSolution || searchMode) ? "#f8f8f8" : "#fff",
+            background: "none",
             borderRight: "none",
             borderTopRightRadius: 0,
             borderBottomRightRadius: 0
         }} onClick={() => {
             setSearchResult([])
             setSearchMode((mode)=> !mode)
+            setHintMode(false)
+            setShowSolution(false)
+            if(checkUsed) {
+                setClickPair((cp)=> {
+                    return clickPairToRandomColor(cp)
+                })
+                setCheckUsed(false)
+                return
+            }
         }}>
             <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-list-search" width="42" height="42" viewBox="0 0 24 24" stroke-width="1.5" stroke="#00b341" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -362,17 +374,27 @@ export const FindPlayComponent = ({data}:{
         </button>
         <button className={stylesA.button} style={{
             margin: 0,
-            marginTop: 12,
+            marginTop: 0,
             boxShadow: "none",
             border: "1px solid #eee",
             borderLeft: "none",
             cursor: "pointer",
-            backgroundColor: (hintMode || showSolution || searchMode) ? "#f8f8f8" : "#fff",
+            //backgroundColor: (hintMode || showSolution || searchMode) ? "#f8f8f8" : "#fff",
+            background: "none",
             borderRight: "none",
             borderRadius: 0
         }} onClick={() => {
             setSearchResult([])
             setShowSolution((mode) => !mode)
+            setHintMode(false)
+            setSearchMode(false)
+            if(checkUsed) {
+                setClickPair((cp)=> {
+                    return clickPairToRandomColor(cp)
+                })
+                setCheckUsed(false)
+                return
+            }
         }}>
             <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-list" width="42" height="42" viewBox="0 0 24 24" stroke-width="1.5" stroke="#00b341" fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -386,18 +408,28 @@ export const FindPlayComponent = ({data}:{
         </button>
         <button className={stylesA.button} style={{
             margin: 0,
-            marginTop: 12,
+            marginTop: 0,
             boxShadow: "none",
             border: "1px solid #eee",
             borderLeft: "none",
             cursor: "pointer",
-            backgroundColor: (hintMode || showSolution || searchMode) ? "#f8f8f8" : "#fff",
+            //backgroundColor: (hintMode || showSolution || searchMode) ? "#f8f8f8" : "#fff",
+            background: "none",
             borderRight: canCheck ? "none" : "1px solid #eee",
             borderRadius: 0,
             borderTopRightRadius: canCheck ? 0 : 4,
             borderBottomRightRadius: canCheck ? 0 : 4
         }} onClick={() => {
             setHintMode((mode) => !mode)
+            setSearchMode(false)
+            setShowSolution(false)
+            if(checkUsed) {
+                setClickPair((cp)=> {
+                    return clickPairToRandomColor(cp)
+                })
+                setCheckUsed(false)
+                return
+            }
         }}>
             <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-bulb" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#FFC107" fill="none" strokeLinecap="round" strokeLinejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -408,15 +440,19 @@ export const FindPlayComponent = ({data}:{
         </button>
         {canCheck && <button className={stylesA.button} style={{
             margin: 0,
-            marginTop: 12,
+            marginTop: 0,
             boxShadow: "none",
             border: "1px solid #eee",
             borderLeft: "none",
             cursor: "pointer",
-            backgroundColor: (hintMode || showSolution || searchMode) ? "#f8f8f8" : "#fff",
+            //backgroundColor: (hintMode || showSolution || searchMode) ? "#f8f8f8" : "#fff",
+            background: "none",
             borderTopLeftRadius: 0,
             borderBottomLeftRadius: 0,
         }} onClick={()=> {
+            setHintMode(false)
+            setSearchMode(false)
+            setShowSolution(false)
             if(checkUsed) {
                 setClickPair((cp)=> {
                     return clickPairToRandomColor(cp)
@@ -434,6 +470,26 @@ export const FindPlayComponent = ({data}:{
                   <path d="M5 12l5 5l10 -10" />
                 </svg>
         </button>}
+        
+        <div className={styles.button_hover} style={{
+            transform:
+                (hintMode || showSolution || searchMode || checkUsed)
+                    ? hintMode
+                        ? `translateX(${128}px)`
+                        : showSolution
+                            ? `translateX(${64}px)`
+                            : checkUsed
+                                ? `translateX(${192}px)`
+                                : `translateX(${0})`
+                    : "inherit",
+            opacity: (hintMode || showSolution || searchMode || checkUsed) ? 1 : 0,
+            backgroundColor: (hintMode || showSolution || searchMode || checkUsed) ? "#eee" : "#f5f5f5"
+        }} />
+        <div className={styles.tooltip}><p>選択した漢字が使われている単語を検索します</p></div>
+        <div className={styles.tooltip}><p>答えを表示します</p></div>
+        <div className={styles.tooltip}><p>選択した漢字のペアを選択します</p></div>
+        <div className={styles.tooltip}><p>見つけた単語が存在するか確認します</p></div>
+
     </div>
     <div style={{
         //borderBottom: "1px solid #000",
