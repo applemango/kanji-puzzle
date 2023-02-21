@@ -233,6 +233,49 @@ const searchChar = (char: string): Array<string> => {
 
 type searchResult = string
 
+const ArrayToCharArray = (arr: string[]) => {
+    let r = []
+    for(let i = 0; i < arr.length; i++) {
+        r.push(...arr[i].split(""))
+    }
+    return r
+}
+
+const getSearchResultColor = (word: string, char: string, words: string[]) => {
+    if(!char)
+        return "#000"
+    if(searchResultCanCreateWord(word, char, words))
+        return "#222"
+    return "#ccc"
+}
+
+const searchResultCanCreateWord = (word: string, char: string, words: string[]): boolean => {
+    if(!char)
+        return false
+    if(!(words.length && word && char))
+        return false
+    const charArray  = ArrayToCharArray(words)
+    if(charArray.includes(word[1]) && charArray.includes(word[0]))
+        return true
+    return false
+}
+
+const sortSearchResult = (char: string, searchResult: string[], words: string[]) => {
+    if(!char)
+        return searchResult
+    let ok = []
+    let no = []
+    for(let i = 0; i < searchResult.length; i++) {
+        const word = searchResult[i]
+        if(searchResultCanCreateWord(word, char, words)) {
+            ok.push(searchResult[i])
+            continue
+        }
+        no.push(searchResult[i])
+    }
+    return ok.concat(no)
+}
+
 export const FindPlayComponent = ({data}:{
     data: null | findCreate
 }) => {
@@ -247,6 +290,7 @@ export const FindPlayComponent = ({data}:{
 
     const [searchMode, setSearchMode] = useState(false)
     const [searchResult, setSearchResult] = useState<Array<searchResult>>([])
+    const [searchChars, setSearchChars] = useState("")
     const [showSolution, setShowSolution] = useState(false)
 
     const [end, setEnd] = useState(false)
@@ -290,6 +334,7 @@ export const FindPlayComponent = ({data}:{
 
                 if(searchMode) {
                     setSearchResult(searchChar(me.char))
+                    setSearchChars(me.char)
                     setSearchMode(false)
                     return
                 }
@@ -385,6 +430,7 @@ export const FindPlayComponent = ({data}:{
             borderRadius: 0
         }} onClick={() => {
             setSearchResult([])
+            setSearchChars("")
             setShowSolution((mode) => !mode)
             setHintMode(false)
             setSearchMode(false)
@@ -507,11 +553,11 @@ export const FindPlayComponent = ({data}:{
         flexWrap: "wrap",
         justifyContent: "center",
     }}>
-        { (searchResult.length
+        { sortSearchResult(searchChars, searchResult.length
             ? searchResult
             : showSolution
                 ? data.words
-                : []).map((word: string, i: number)=> <div key={i} style={{
+                : [], data.words).map((word: string, i: number)=> <div key={i} style={{
             display: "flex",
             alignItems: "baseline",
             borderTop: "1px solid #000",
@@ -524,13 +570,15 @@ export const FindPlayComponent = ({data}:{
                 marginTop: 8,
                 fontSize: 32,
                 fontFamily: lineSeed.style.fontFamily,
+                color: getSearchResultColor(word, searchChars, data.words)
             }}>{word}</p>
             <p style={{
                 fontFamily: lineSeed.style.fontFamily,
                 width: 80,
                 textOverflow: "ellipsis",
                 overflow: "hidden",
-                whiteSpace: "nowrap"
+                whiteSpace: "nowrap",
+                color: getSearchResultColor(word, searchChars, data.words)
             }}>{kanjiYomi[word] == "nan" || !kanjiYomi[word] ? "" : kanjiYomi[word] }</p>
         </div>)}
     </div>
