@@ -116,7 +116,7 @@ const WadouRandom_ = () => {
                     setInput(e.target.value)
                     setCorrect(null)
                     setCorrects([null, null, null, null])
-                }}/>
+                }} placeholder="回答入力欄"/>
                 <button className={stylesA.button} style={{
                     margin: 0,
                     borderRadius: 0,
