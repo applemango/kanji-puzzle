@@ -36,7 +36,7 @@ export default function Home() {
     <Link href="/play/find"><p>遊ぶ | play</p></Link>
     <h3>使い方</h3>
     <p>問題のデータを読み込みます</p>
-    <p>(更に詳しく知りたい人の為に。gzipされたURIEncodeされたbase64を解凍し文字列のjsonをparseしjsのobjectに変換し使用しています。code: JSON.parse(decodeURIComponent(unzipSync(Buffer.from(data.replaceAll("-","+").replaceAll("_","/"), "base64")).toString("utf-8")))　　　)</p>
+    <p>{'(更に詳しく知りたい人の為に。gzipされたURIEncodeされたbase64を解凍し文字列のjsonをparseしjsのobjectに変換し使用しています。code: JSON.parse(decodeURIComponent(unzipSync(Buffer.from(data.replaceAll("-","+").replaceAll("_","/"), "base64")).toString("utf-8")))　　　)'}</p>
     <Link href="/create/find"><p>問題を作る | create</p></Link>
     <h3>使い方</h3>
     <p>レベルを数字で入力し(デフォルトで0が入っているやつ)くるくる回っている矢印アイコンを押しランダムに配置し、アーケードなアイコンを押したら新しくタブが開かれそのタブで遊びます</p>
